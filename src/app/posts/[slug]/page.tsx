@@ -47,7 +47,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
   return (
     <article className="max-w-4xl mx-auto px-4 py-10">
-      <header className="mb-8">
+      <header className="mb-8 bg-gray-50 dark:bg-gray-900/50 -mx-4 px-4 py-6 rounded-xl border border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
           {post.category && (
             <Link
@@ -68,7 +68,7 @@ export default async function PostPage({ params }: PostPageProps) {
             {post.tags.map((tag) => (
               <span
                 key={tag.name}
-                className="text-sm px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                className="text-sm px-2 py-0.5 rounded bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700"
               >
                 #{tag.name}
               </span>
