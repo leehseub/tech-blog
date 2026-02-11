@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import PostList from "@/components/posts/PostList";
 import Link from "next/link";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const posts = await prisma.post.findMany({

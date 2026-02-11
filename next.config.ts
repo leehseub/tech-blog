@@ -11,6 +11,17 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  headers: async () => [
+    {
+      source: "/((?!admin|api).*)",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "s-maxage=60, stale-while-revalidate=300",
+        },
+      ],
+    },
+  ],
 };
 
 export default nextConfig;

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import type { Metadata } from "next";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 interface PostPageProps {
   params: Promise<{ slug: string }>;

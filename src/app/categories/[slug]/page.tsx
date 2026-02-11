@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import PostList from "@/components/posts/PostList";
 import type { Metadata } from "next";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;

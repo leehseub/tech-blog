@@ -3,7 +3,7 @@ import PostList from "@/components/posts/PostList";
 import Link from "next/link";
 import type { Metadata } from "next";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "글 목록",
