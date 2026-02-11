@@ -56,7 +56,8 @@ export default function PostContent({ content }: PostContentProps) {
             );
           },
           img({ src, alt, ...props }) {
-            const proxiedSrc = src ? proxyImageUrl(src) : "";
+            const srcStr = typeof src === "string" ? src : "";
+            const proxiedSrc = srcStr ? proxyImageUrl(srcStr) : "";
             return <img src={proxiedSrc} alt={alt || ""} {...props} />;
           },
         }}
