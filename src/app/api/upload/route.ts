@@ -37,5 +37,7 @@ export async function POST(request: NextRequest) {
 
   await writeFile(path.join(uploadDir, filename), buffer);
 
-  return NextResponse.json({ url: `/api/uploads/${filename}` });
+  // Use absolute URL so images work on both VM and Vercel
+  const baseUrl = process.env.UPLOAD_BASE_URL || "";
+  return NextResponse.json({ url: `${baseUrl}/api/uploads/${filename}` });
 }
