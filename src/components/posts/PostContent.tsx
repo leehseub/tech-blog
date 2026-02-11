@@ -4,10 +4,21 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 interface PostContentProps {
   content: string;
+}
+
+function proxyImageUrl(src: string): string {
+  if (
+    typeof window !== "undefined" &&
+    window.location.protocol === "https:" &&
+    src.startsWith("http://")
+  ) {
+    return `/api/image-proxy?url=${encodeURIComponent(src)}`;
+  }
+  return src;
 }
 
 export default function PostContent({ content }: PostContentProps) {
@@ -43,6 +54,10 @@ export default function PostContent({ content }: PostContentProps) {
                 <pre {...props}>{children}</pre>
               </div>
             );
+          },
+          img({ src, alt, ...props }) {
+            const proxiedSrc = src ? proxyImageUrl(src) : "";
+            return <img src={proxiedSrc} alt={alt || ""} {...props} />;
           },
         }}
       >
