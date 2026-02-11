@@ -5,6 +5,8 @@ import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import type { Metadata } from "next";
 
+export const revalidate = 60;
+
 interface PostPageProps {
   params: Promise<{ slug: string }>;
 }
