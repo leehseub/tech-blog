@@ -46,7 +46,7 @@ export default async function PostPage({ params }: PostPageProps) {
   if (!post) notFound();
 
   return (
-    <article className="max-w-3xl mx-auto px-4 py-10">
+    <article className="max-w-4xl mx-auto px-4 py-10">
       <header className="mb-8">
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
           {post.category && (
