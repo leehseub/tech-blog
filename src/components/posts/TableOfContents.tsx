@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface TocItem {
   id: string;
   text: string;
 }
 
-const HEADER_OFFSET = 80; // h-16(64px) + 여유
+const HEADER_OFFSET = 80;
 
 function slugify(text: string): string {
   return text
@@ -42,31 +42,25 @@ function extractHeadings(markdown: string): TocItem[] {
 export default function TableOfContents({ content }: { content: string }) {
   const headings = extractHeadings(content);
   const [activeId, setActiveId] = useState("");
-  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const handleScroll = useCallback(() => {
+    let current = "";
+    for (const h of headings) {
+      const el = document.getElementById(h.id);
+      if (!el) continue;
+      // heading이 헤더 라인(HEADER_OFFSET + 여유)을 지났으면 active 후보
+      if (el.getBoundingClientRect().top <= HEADER_OFFSET + 20) {
+        current = h.id;
+      }
+    }
+    setActiveId(current);
+  }, [headings]);
 
   useEffect(() => {
-    const elements = headings
-      .map((h) => document.getElementById(h.id))
-      .filter(Boolean) as HTMLElement[];
-
-    if (elements.length === 0) return;
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-
-        if (visible.length > 0) {
-          setActiveId(visible[0].target.id);
-        }
-      },
-      { rootMargin: `-${HEADER_OFFSET}px 0px -70% 0px`, threshold: 0.1 },
-    );
-
-    elements.forEach((el) => observerRef.current!.observe(el));
-    return () => observerRef.current?.disconnect();
-  }, [headings]);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   if (headings.length === 0) return null;
 
