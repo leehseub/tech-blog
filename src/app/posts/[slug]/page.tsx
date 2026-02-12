@@ -82,8 +82,8 @@ export default async function PostPage({ params }: PostPageProps) {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10 xl:flex xl:gap-10">
-    <article className="max-w-4xl min-w-0 flex-1">
+    <div className="relative">
+    <article className="max-w-4xl mx-auto px-4 py-10">
       <header className="mb-8 bg-gray-50 dark:bg-gray-900/50 -mx-4 px-4 py-6 rounded-xl border border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
           {post.category && (
@@ -168,8 +168,8 @@ export default async function PostPage({ params }: PostPageProps) {
       </footer>
     </article>
 
-    {/* 우측 TOC — xl(1280px) 이상에서만 표시 */}
-    <aside className="hidden xl:block w-64 shrink-0">
+    {/* 우측 TOC — 본문 우측 바깥에 고정 배치 */}
+    <aside className="hidden xl:block absolute top-10 w-56" style={{ left: "calc(50% + 28rem)" }}>
       <TableOfContents content={post.content} />
     </aside>
     </div>
