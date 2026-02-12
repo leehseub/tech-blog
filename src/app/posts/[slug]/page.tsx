@@ -168,8 +168,8 @@ export default async function PostPage({ params }: PostPageProps) {
       </footer>
     </article>
 
-    {/* 우측 TOC — 본문 우측 바깥에 고정 배치 */}
-    <aside className="hidden xl:block absolute top-10 w-56" style={{ left: "calc(50% + 28rem)" }}>
+    {/* 우측 TOC — 본문 우측 바깥에 fixed 배치, 스크롤 따라감 */}
+    <aside className="hidden xl:block fixed top-24 w-56" style={{ left: "calc(50% + 28rem)" }}>
       <TableOfContents content={post.content} />
     </aside>
     </div>

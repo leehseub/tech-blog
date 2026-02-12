@@ -71,7 +71,7 @@ export default function TableOfContents({ content }: { content: string }) {
   if (headings.length === 0) return null;
 
   return (
-    <nav className="hidden xl:block sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto text-sm">
+    <nav className="max-h-[calc(100vh-8rem)] overflow-y-auto text-sm">
       <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">목차</p>
       <ul className="space-y-1.5">
         {headings.map((h) => (
