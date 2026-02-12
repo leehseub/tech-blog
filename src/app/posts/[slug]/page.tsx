@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import PostContent from "@/components/posts/PostContent";
+import TableOfContents from "@/components/posts/TableOfContents";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -61,7 +62,8 @@ export default async function PostPage({ params }: PostPageProps) {
     : [];
 
   return (
-    <article className="max-w-4xl mx-auto px-4 py-10">
+    <div className="max-w-7xl mx-auto px-4 py-10 xl:flex xl:gap-10">
+    <article className="max-w-4xl min-w-0 flex-1">
       <header className="mb-8 bg-gray-50 dark:bg-gray-900/50 -mx-4 px-4 py-6 rounded-xl border border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
           {post.category && (
@@ -131,5 +133,11 @@ export default async function PostPage({ params }: PostPageProps) {
         </Link>
       </footer>
     </article>
+
+    {/* 우측 TOC — xl(1280px) 이상에서만 표시 */}
+    <aside className="hidden xl:block w-64 shrink-0">
+      <TableOfContents content={post.content} />
+    </aside>
+    </div>
   );
 }
