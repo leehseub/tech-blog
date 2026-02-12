@@ -5,8 +5,9 @@ import { useState, useEffect, useRef } from "react";
 interface TocItem {
   id: string;
   text: string;
-  level: number;
 }
+
+const HEADER_OFFSET = 80; // h-16(64px) + 여유
 
 function slugify(text: string): string {
   return text
@@ -29,14 +30,10 @@ function extractHeadings(markdown: string): TocItem[] {
     }
     if (inCodeBlock) continue;
 
-    const match = line.match(/^(#{2,4})\s+(.+)$/);
+    const match = line.match(/^##\s+(.+)$/);
     if (match) {
-      const text = match[2].replace(/[`*_~\[\]]/g, "");
-      headings.push({
-        id: slugify(text),
-        text,
-        level: match[1].length,
-      });
+      const text = match[1].replace(/[`*_~\[\]]/g, "");
+      headings.push({ id: slugify(text), text });
     }
   }
   return headings;
@@ -56,7 +53,6 @@ export default function TableOfContents({ content }: { content: string }) {
 
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        // 화면에 보이는 heading 중 가장 위에 있는 것을 active로
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
@@ -65,7 +61,7 @@ export default function TableOfContents({ content }: { content: string }) {
           setActiveId(visible[0].target.id);
         }
       },
-      { rootMargin: "0px 0px -70% 0px", threshold: 0.1 },
+      { rootMargin: `-${HEADER_OFFSET}px 0px -70% 0px`, threshold: 0.1 },
     );
 
     elements.forEach((el) => observerRef.current!.observe(el));
@@ -74,30 +70,26 @@ export default function TableOfContents({ content }: { content: string }) {
 
   if (headings.length === 0) return null;
 
-  const minLevel = Math.min(...headings.map((h) => h.level));
-
   return (
     <nav className="hidden xl:block sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto text-sm">
       <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">목차</p>
-      <ul className="space-y-1.5 border-l-2 border-gray-200 dark:border-gray-700">
+      <ul className="space-y-1.5">
         {headings.map((h) => (
-          <li
-            key={h.id}
-            style={{ paddingLeft: `${(h.level - minLevel) * 12 + 12}px` }}
-          >
+          <li key={h.id}>
             <a
               href={`#${h.id}`}
               onClick={(e) => {
                 e.preventDefault();
                 const el = document.getElementById(h.id);
                 if (el) {
-                  el.scrollIntoView({ behavior: "smooth", block: "start" });
+                  const top = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+                  window.scrollTo({ top, behavior: "smooth" });
                   history.replaceState(null, "", `#${h.id}`);
                 }
               }}
               className={`block py-0.5 transition-colors leading-snug ${
                 activeId === h.id
-                  ? "text-blue-600 dark:text-blue-400 font-medium border-l-2 border-blue-600 dark:border-blue-400 -ml-[2px] pl-[2px]"
+                  ? "text-blue-600 dark:text-blue-400 font-medium"
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
               }`}
             >
