@@ -48,18 +48,38 @@ export default async function PostPage({ params }: PostPageProps) {
 
   if (!post) notFound();
 
-  const relatedPosts = post.categoryId
-    ? await prisma.post.findMany({
-        where: {
-          published: true,
-          categoryId: post.categoryId,
-          id: { not: post.id },
-        },
-        orderBy: { createdAt: "desc" },
-        take: 5,
-        select: { slug: true, title: true, createdAt: true },
-      })
-    : [];
+  // 같은 카테고리: 현재 글보다 최신 2개 + 현재 글 + 이전 2개
+  const [newerPosts, olderPosts] = post.categoryId
+    ? await Promise.all([
+        prisma.post.findMany({
+          where: {
+            published: true,
+            categoryId: post.categoryId,
+            createdAt: { gt: post.createdAt },
+          },
+          orderBy: { createdAt: "asc" },
+          take: 2,
+          select: { slug: true, title: true, createdAt: true },
+        }),
+        prisma.post.findMany({
+          where: {
+            published: true,
+            categoryId: post.categoryId,
+            createdAt: { lt: post.createdAt },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 2,
+          select: { slug: true, title: true, createdAt: true },
+        }),
+      ])
+    : [[], []];
+
+  // 최신순 정렬: newer(역순) → 현재 글 → older
+  const categoryPosts = [
+    ...newerPosts.reverse(),
+    { slug: post.slug, title: post.title, createdAt: post.createdAt, isCurrent: true as const },
+    ...olderPosts,
+  ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10 xl:flex xl:gap-10">
@@ -96,7 +116,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
       <PostContent content={post.content} />
 
-      {relatedPosts.length > 0 && (
+      {categoryPosts.length > 1 && (
         <section className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-800">
           <h2 className="text-lg font-semibold mb-4">
             같은 카테고리의 글
@@ -105,21 +125,35 @@ export default async function PostPage({ params }: PostPageProps) {
             </span>
           </h2>
           <ul className="space-y-2">
-            {relatedPosts.map((related) => (
-              <li key={related.slug}>
-                <Link
-                  href={`/posts/${related.slug}`}
-                  className="flex items-baseline gap-3 group"
-                >
-                  <span className="text-sm text-gray-400 shrink-0">
-                    {formatDate(related.createdAt)}
-                  </span>
-                  <span className="text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {related.title}
-                  </span>
-                </Link>
-              </li>
-            ))}
+            {categoryPosts.map((item) => {
+              const isCurrent = "isCurrent" in item;
+              return (
+                <li key={item.slug}>
+                  {isCurrent ? (
+                    <div className="flex items-baseline gap-3 px-2 py-1 -mx-2 rounded bg-blue-50 dark:bg-blue-900/20">
+                      <span className="text-sm text-blue-500 dark:text-blue-400 shrink-0">
+                        {formatDate(item.createdAt)}
+                      </span>
+                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                        {item.title}
+                      </span>
+                    </div>
+                  ) : (
+                    <Link
+                      href={`/posts/${item.slug}`}
+                      className="flex items-baseline gap-3 group"
+                    >
+                      <span className="text-sm text-gray-400 shrink-0">
+                        {formatDate(item.createdAt)}
+                      </span>
+                      <span className="text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {item.title}
+                      </span>
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </section>
       )}
