@@ -18,8 +18,40 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(posts);
   }
 
+  const page = Number(searchParams.get("page")) || 1;
+  const limit = Number(searchParams.get("limit")) || 0;
+  const q = searchParams.get("q");
+  const category = searchParams.get("category");
+
+  const where = {
+    published: true,
+    ...(q && {
+      OR: [
+        { title: { contains: q } },
+        { content: { contains: q } },
+      ],
+    }),
+    ...(category && {
+      category: { slug: category },
+    }),
+  };
+
+  if (limit > 0) {
+    const [posts, totalCount] = await Promise.all([
+      prisma.post.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: { category: true, tags: true },
+      }),
+      prisma.post.count({ where }),
+    ]);
+    return NextResponse.json({ posts, totalCount });
+  }
+
   const posts = await prisma.post.findMany({
-    where: { published: true },
+    where,
     orderBy: { createdAt: "desc" },
     include: { category: true, tags: true },
   });

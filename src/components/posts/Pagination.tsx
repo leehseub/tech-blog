@@ -13,65 +13,85 @@ export default function Pagination({
 }: PaginationProps) {
   if (totalPages <= 1) return null;
 
-  const pages: (number | "...")[] = [];
-
-  // Always show first page
-  pages.push(1);
-
-  if (currentPage > 3) pages.push("...");
-
-  for (
-    let i = Math.max(2, currentPage - 1);
-    i <= Math.min(totalPages - 1, currentPage + 1);
-    i++
-  ) {
-    pages.push(i);
+  // 5개 슬롯: 현재 페이지가 중앙(3번째)에 위치
+  const slots: (number | null)[] = [];
+  for (let offset = -2; offset <= 2; offset++) {
+    const p = currentPage + offset;
+    slots.push(p >= 1 && p <= totalPages ? p : null);
   }
 
-  if (currentPage < totalPages - 2) pages.push("...");
+  const prev5 = Math.max(1, currentPage - 5);
+  const next5 = Math.min(totalPages, currentPage + 5);
 
-  // Always show last page
-  if (totalPages > 1) pages.push(totalPages);
+  const navBtnClass =
+    "w-9 h-9 flex items-center justify-center text-sm rounded-lg transition-colors";
+  const activeNav =
+    "text-gray-500 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-800";
+  const disabledNav = "text-gray-300 dark:text-gray-600 pointer-events-none";
 
   return (
     <nav className="flex justify-center items-center gap-1 mt-10">
-      {currentPage > 1 && (
-        <Link
-          href={buildHref(currentPage - 1)}
-          className="px-3 py-2 text-sm text-gray-500 hover:text-foreground transition-colors"
-        >
-          &larr; 이전
-        </Link>
-      )}
+      {/* << 처음으로 */}
+      <Link
+        href={buildHref(1)}
+        className={`${navBtnClass} ${currentPage === 1 ? disabledNav : activeNav}`}
+        aria-label="처음 페이지"
+        aria-disabled={currentPage === 1}
+        tabIndex={currentPage === 1 ? -1 : undefined}
+      >
+        &laquo;
+      </Link>
 
-      {pages.map((page, i) =>
-        page === "..." ? (
-          <span key={`dot-${i}`} className="px-2 py-2 text-sm text-gray-400">
-            ...
-          </span>
-        ) : (
-          <Link
-            key={page}
-            href={buildHref(page)}
-            className={`px-3 py-2 text-sm rounded-lg transition-colors ${
-              page === currentPage
-                ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 font-medium"
-                : "text-gray-500 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
-            }`}
-          >
-            {page}
-          </Link>
-        )
-      )}
+      {/* < 5페이지 전 */}
+      <Link
+        href={buildHref(prev5)}
+        className={`${navBtnClass} ${currentPage === 1 ? disabledNav : activeNav}`}
+        aria-label="5페이지 전"
+        aria-disabled={currentPage === 1}
+        tabIndex={currentPage === 1 ? -1 : undefined}
+      >
+        &lsaquo;
+      </Link>
 
-      {currentPage < totalPages && (
-        <Link
-          href={buildHref(currentPage + 1)}
-          className="px-3 py-2 text-sm text-gray-500 hover:text-foreground transition-colors"
-        >
-          다음 &rarr;
-        </Link>
-      )}
+      {/* 5개 페이지 슬롯 */}
+      {slots.map((page, i) => (
+        <span key={i} className={navBtnClass}>
+          {page !== null ? (
+            <Link
+              href={buildHref(page)}
+              className={`w-full h-full flex items-center justify-center rounded-lg transition-colors ${
+                page === currentPage
+                  ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 font-medium"
+                  : "text-gray-500 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
+              }`}
+            >
+              {page}
+            </Link>
+          ) : null}
+        </span>
+      ))}
+
+      {/* > 5페이지 후 */}
+      <Link
+        href={buildHref(next5)}
+        className={`${navBtnClass} ${currentPage === totalPages ? disabledNav : activeNav}`}
+        aria-label="5페이지 후"
+        aria-disabled={currentPage === totalPages}
+        tabIndex={currentPage === totalPages ? -1 : undefined}
+      >
+        &rsaquo;
+      </Link>
+
+      {/* >> 끝으로 */}
+      <Link
+        href={buildHref(totalPages)}
+        className={`${navBtnClass} ${currentPage === totalPages ? disabledNav : activeNav}`}
+        aria-label="마지막 페이지"
+        aria-disabled={currentPage === totalPages}
+        tabIndex={currentPage === totalPages ? -1 : undefined}
+      >
+        &raquo;
+      </Link>
     </nav>
   );
 }

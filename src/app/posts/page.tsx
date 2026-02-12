@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import PostList from "@/components/posts/PostList";
-import Pagination from "@/components/posts/Pagination";
+import PaginatedPostList from "@/components/posts/PaginatedPostList";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -102,19 +101,17 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
         </p>
       )}
 
-      <PostList posts={posts} />
-
-      <Pagination
+      <PaginatedPostList
+        initialPosts={posts}
         currentPage={currentPage}
         totalPages={totalPages}
-        buildHref={(p) => {
-          const params = new URLSearchParams();
-          if (q) params.set("q", q);
-          if (category) params.set("category", category);
-          if (p > 1) params.set("page", String(p));
-          const qs = params.toString();
-          return `/posts${qs ? `?${qs}` : ""}`;
+        totalCount={totalCount}
+        basePath="/posts"
+        queryParams={{
+          ...(q && { q }),
+          ...(category && { category }),
         }}
+        apiUrl={`/api/posts?limit=${POSTS_PER_PAGE}${q ? `&q=${q}` : ""}${category ? `&category=${category}` : ""}`}
       />
     </div>
   );

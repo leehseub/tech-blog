@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import PostList from "@/components/posts/PostList";
-import Pagination from "@/components/posts/Pagination";
+import PaginatedPostList from "@/components/posts/PaginatedPostList";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -54,13 +53,13 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       <p className="text-sm text-gray-500 mb-8">
         {totalCount}개의 글
       </p>
-      <PostList posts={posts} />
-      <Pagination
+      <PaginatedPostList
+        initialPosts={posts}
         currentPage={currentPage}
         totalPages={totalPages}
-        buildHref={(p) =>
-          `/categories/${slug}${p > 1 ? `?page=${p}` : ""}`
-        }
+        totalCount={totalCount}
+        basePath={`/categories/${slug}`}
+        apiUrl={`/api/posts?limit=${POSTS_PER_PAGE}&category=${slug}`}
       />
     </div>
   );
