@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
+import TagLink from "./TagLink";
 
 const MAX_VISIBLE_TAGS = 5;
 
@@ -61,13 +62,7 @@ export default function PostCard({ post }: PostCardProps) {
       {/* 태그 - Link 밖에서 독립 클릭 */}
       <div className="flex items-center gap-2 mt-1.5 h-5">
         {visibleTags.map((tag) => (
-          <Link
-            key={tag.name}
-            href={`/posts?tags=${encodeURIComponent(tag.name)}`}
-            className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-          >
-            #{tag.name}
-          </Link>
+          <TagLink key={tag.name} name={tag.name} />
         ))}
         {hiddenCount > 0 && (
           <span className="text-xs text-gray-400 dark:text-gray-500 cursor-default group/more relative">
