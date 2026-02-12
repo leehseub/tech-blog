@@ -10,14 +10,16 @@ interface CategoryPageProps {
 }
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const category = await prisma.category.findUnique({ where: { slug } });
   if (!category) return { title: "카테고리를 찾을 수 없습니다" };
   return { title: `${category.name} 카테고리` };
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
 
   const category = await prisma.category.findUnique({
     where: { slug },
