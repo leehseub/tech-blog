@@ -1,7 +1,10 @@
-import slugifyLib from "slugify";
-
 export function slugify(text: string): string {
-  return slugifyLib(text, { lower: true, strict: true });
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, "") // 모든 언어의 문자·숫자·공백·하이픈만 유지
+    .replace(/[\s-]+/g, "-") // 공백/하이픈 연속 → 단일 하이픈
+    .replace(/^-+|-+$/g, ""); // 양쪽 하이픈 제거
 }
 
 export function formatDate(date: Date | string): string {
