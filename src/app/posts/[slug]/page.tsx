@@ -47,6 +47,19 @@ export default async function PostPage({ params }: PostPageProps) {
 
   if (!post) notFound();
 
+  const relatedPosts = post.categoryId
+    ? await prisma.post.findMany({
+        where: {
+          published: true,
+          categoryId: post.categoryId,
+          id: { not: post.id },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: { slug: true, title: true, createdAt: true },
+      })
+    : [];
+
   return (
     <article className="max-w-4xl mx-auto px-4 py-10">
       <header className="mb-8 bg-gray-50 dark:bg-gray-900/50 -mx-4 px-4 py-6 rounded-xl border border-gray-100 dark:border-gray-800">
@@ -81,7 +94,35 @@ export default async function PostPage({ params }: PostPageProps) {
 
       <PostContent content={post.content} />
 
-      <footer className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-800">
+      {relatedPosts.length > 0 && (
+        <section className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-800">
+          <h2 className="text-lg font-semibold mb-4">
+            같은 카테고리의 글
+            <span className="ml-2 text-sm font-normal text-gray-500">
+              {post.category!.name}
+            </span>
+          </h2>
+          <ul className="space-y-2">
+            {relatedPosts.map((related) => (
+              <li key={related.slug}>
+                <Link
+                  href={`/posts/${related.slug}`}
+                  className="flex items-baseline gap-3 group"
+                >
+                  <span className="text-sm text-gray-400 shrink-0">
+                    {formatDate(related.createdAt)}
+                  </span>
+                  <span className="text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    {related.title}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <footer className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
         <Link
           href="/posts"
           className="text-sm text-gray-500 hover:text-foreground transition-colors"
