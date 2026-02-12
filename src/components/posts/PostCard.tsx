@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import TagLink from "./TagLink";
+import HiddenTagsToggle from "./HiddenTagsToggle";
 
 const MAX_VISIBLE_TAGS = 5;
 
@@ -65,16 +66,7 @@ export default function PostCard({ post }: PostCardProps) {
           <TagLink key={tag.name} name={tag.name} />
         ))}
         {hiddenCount > 0 && (
-          <span className="text-xs text-gray-400 dark:text-gray-500 cursor-default group/more relative">
-            +{hiddenCount}
-            <span className="invisible group-hover/more:visible absolute left-0 bottom-full z-20 pb-1 text-xs whitespace-nowrap">
-              <span className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
-                {hiddenTags.map((t) => (
-                  <TagLink key={t.name} name={t.name} />
-                ))}
-              </span>
-            </span>
-          </span>
+          <HiddenTagsToggle tags={hiddenTags} />
         )}
       </div>
     </article>
