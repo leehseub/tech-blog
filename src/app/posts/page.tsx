@@ -32,7 +32,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
       category: { slug: category },
     }),
     ...(tagList.length > 0 && {
-      tags: { some: { name: { in: tagList } } },
+      AND: tagList.map((tag) => ({ tags: { some: { name: tag } } })),
     }),
   };
 
