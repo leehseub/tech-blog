@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-const POSTS_PER_PAGE = 10;
+const POSTS_PER_PAGE = 5;
 
 export const metadata: Metadata = {
   title: "글 목록",
