@@ -67,8 +67,10 @@ export default function PostCard({ post }: PostCardProps) {
         {hiddenCount > 0 && (
           <span className="text-xs text-gray-400 dark:text-gray-500 cursor-default group/more relative">
             +{hiddenCount}
-            <span className="invisible group-hover/more:visible absolute left-0 bottom-full mb-1 z-20 px-3 py-2 text-xs text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg whitespace-nowrap pointer-events-none">
-              {hiddenTags.map((t) => `#${t.name}`).join("  ")}
+            <span className="invisible group-hover/more:visible absolute left-0 bottom-full mb-1 z-20 px-3 py-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg whitespace-nowrap flex items-center gap-2">
+              {hiddenTags.map((t) => (
+                <TagLink key={t.name} name={t.name} />
+              ))}
             </span>
           </span>
         )}
