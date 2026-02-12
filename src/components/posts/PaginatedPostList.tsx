@@ -108,7 +108,7 @@ export default function PaginatedPostList({
     <>
       {/* 데스크톱: 페이지 번호 방식 */}
       <div className="hidden md:block">
-        <div className="divide-y divide-gray-100 dark:divide-gray-800 min-h-[600px]">
+        <div className="divide-y divide-gray-100 dark:divide-gray-800 min-h-[700px]">
           {initialPosts.map((post) => (
             <PostCard key={post.slug} post={post} />
           ))}
