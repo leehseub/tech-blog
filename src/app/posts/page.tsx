@@ -1,20 +1,24 @@
 import { prisma } from "@/lib/prisma";
 import PostList from "@/components/posts/PostList";
+import Pagination from "@/components/posts/Pagination";
 import Link from "next/link";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+
+const POSTS_PER_PAGE = 10;
 
 export const metadata: Metadata = {
   title: "글 목록",
 };
 
 interface PostsPageProps {
-  searchParams: Promise<{ q?: string; category?: string }>;
+  searchParams: Promise<{ q?: string; category?: string; page?: string }>;
 }
 
 export default async function PostsPage({ searchParams }: PostsPageProps) {
-  const { q, category } = await searchParams;
+  const { q, category, page } = await searchParams;
+  const currentPage = Math.max(1, Number(page) || 1);
 
   const where = {
     published: true,
@@ -29,14 +33,21 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
     }),
   };
 
-  const posts = await prisma.post.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    include: {
-      category: true,
-      tags: true,
-    },
-  });
+  const [posts, totalCount] = await Promise.all([
+    prisma.post.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (currentPage - 1) * POSTS_PER_PAGE,
+      take: POSTS_PER_PAGE,
+      include: {
+        category: true,
+        tags: true,
+      },
+    }),
+    prisma.post.count({ where }),
+  ]);
+
+  const totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
 
   const categories = await prisma.category.findMany({
     orderBy: { name: "asc" },
@@ -92,6 +103,19 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
       )}
 
       <PostList posts={posts} />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        buildHref={(p) => {
+          const params = new URLSearchParams();
+          if (q) params.set("q", q);
+          if (category) params.set("category", category);
+          if (p > 1) params.set("page", String(p));
+          const qs = params.toString();
+          return `/posts${qs ? `?${qs}` : ""}`;
+        }}
+      />
     </div>
   );
 }
