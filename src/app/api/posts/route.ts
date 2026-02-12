@@ -22,6 +22,8 @@ export async function GET(request: NextRequest) {
   const limit = Number(searchParams.get("limit")) || 0;
   const q = searchParams.get("q");
   const category = searchParams.get("category");
+  const tags = searchParams.get("tags");
+  const tagList = tags ? tags.split(",").filter(Boolean) : [];
 
   const where = {
     published: true,
@@ -33,6 +35,9 @@ export async function GET(request: NextRequest) {
     }),
     ...(category && {
       category: { slug: category },
+    }),
+    ...(tagList.length > 0 && {
+      tags: { some: { name: { in: tagList } } },
     }),
   };
 

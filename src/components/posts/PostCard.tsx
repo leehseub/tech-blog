@@ -20,8 +20,9 @@ export default function PostCard({ post }: PostCardProps) {
   const hiddenCount = hiddenTags.length;
 
   return (
-    <article className="group/card relative">
-      <Link href={`/posts/${post.slug}`} className="block py-4 h-[140px] flex flex-col justify-center">
+    <article className="group/card relative py-4 h-[140px] flex flex-col justify-center">
+      {/* 클릭 가능한 포스트 링크 영역 */}
+      <Link href={`/posts/${post.slug}`} className="block">
         {/* 카테고리 + 날짜 */}
         <div className="flex items-center gap-2 text-xs text-gray-500 mb-1.5">
           {post.category && (
@@ -34,44 +35,49 @@ export default function PostCard({ post }: PostCardProps) {
           </time>
         </div>
 
-        {/* 제목 - 1줄, 넘치면 말줄임 + 커스텀 툴팁 */}
-        <h2 className="text-lg font-semibold group-hover/card:text-blue-600 dark:group-hover/card:text-blue-400 transition-colors mb-1 truncate group/title relative">
-          {post.title}
+        {/* 제목 - overflow-visible wrapper로 툴팁 표시 */}
+        <div className="relative overflow-visible mb-1 group/title">
+          <h2 className="text-lg font-semibold group-hover/card:text-blue-600 dark:group-hover/card:text-blue-400 transition-colors truncate">
+            {post.title}
+          </h2>
           <span className="invisible group-hover/title:visible absolute left-0 top-full mt-1 z-20 max-w-md px-3 py-2 text-sm font-normal text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg whitespace-normal pointer-events-none">
             {post.title}
           </span>
-        </h2>
+        </div>
 
-        {/* 요약 - 1줄, 넘치면 말줄임 + 커스텀 툴팁 */}
-        <p className="text-sm text-gray-600 dark:text-gray-400 truncate h-5 group/excerpt relative">
-          {post.excerpt || "\u00A0"}
+        {/* 요약 - overflow-visible wrapper로 툴팁 표시 */}
+        <div className="relative overflow-visible group/excerpt">
+          <p className="text-sm text-gray-600 dark:text-gray-400 truncate h-5">
+            {post.excerpt || "\u00A0"}
+          </p>
           {post.excerpt && (
             <span className="invisible group-hover/excerpt:visible absolute left-0 top-full mt-1 z-20 max-w-md px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg whitespace-normal pointer-events-none">
               {post.excerpt}
             </span>
           )}
-        </p>
-
-        {/* 태그 - 최대 5개 + "+N" 호버 시 커스텀 툴팁 */}
-        <div className="flex items-center gap-2 mt-1.5 h-5">
-          {visibleTags.map((tag) => (
-            <span
-              key={tag.name}
-              className="text-xs text-gray-500 dark:text-gray-400"
-            >
-              #{tag.name}
-            </span>
-          ))}
-          {hiddenCount > 0 && (
-            <span className="text-xs text-gray-400 dark:text-gray-500 cursor-default group/more relative">
-              +{hiddenCount}
-              <span className="invisible group-hover/more:visible absolute left-0 bottom-full mb-1 z-20 px-3 py-2 text-xs text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg whitespace-nowrap pointer-events-none">
-                {hiddenTags.map((t) => `#${t.name}`).join("  ")}
-              </span>
-            </span>
-          )}
         </div>
       </Link>
+
+      {/* 태그 - Link 밖에서 독립 클릭 */}
+      <div className="flex items-center gap-2 mt-1.5 h-5">
+        {visibleTags.map((tag) => (
+          <Link
+            key={tag.name}
+            href={`/posts?tags=${encodeURIComponent(tag.name)}`}
+            className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            #{tag.name}
+          </Link>
+        ))}
+        {hiddenCount > 0 && (
+          <span className="text-xs text-gray-400 dark:text-gray-500 cursor-default group/more relative">
+            +{hiddenCount}
+            <span className="invisible group-hover/more:visible absolute left-0 bottom-full mb-1 z-20 px-3 py-2 text-xs text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg whitespace-nowrap pointer-events-none">
+              {hiddenTags.map((t) => `#${t.name}`).join("  ")}
+            </span>
+          </span>
+        )}
+      </div>
     </article>
   );
 }
