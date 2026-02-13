@@ -11,11 +11,7 @@ interface PostContentProps {
 }
 
 function proxyImageUrl(src: string): string {
-  if (
-    typeof window !== "undefined" &&
-    window.location.protocol === "https:" &&
-    src.startsWith("http://")
-  ) {
+  if (src.startsWith("http://")) {
     return `/api/image-proxy?url=${encodeURIComponent(src)}`;
   }
   return src;
