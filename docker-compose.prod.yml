@@ -55,6 +55,14 @@ services:
 
 volumes:
   mysql_data:
+    external:
+      name: tech-blog-db_mysql_data
   uploads:
+    external:
+      name: tech-blog-db_uploads
   certbot_etc:
+    external:
+      name: tech-blog-db_certbot_etc
   certbot_var:
+    external:
+      name: tech-blog-db_certbot_var
