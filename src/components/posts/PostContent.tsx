@@ -100,7 +100,7 @@ export default function PostContent({ content }: PostContentProps) {
               typeof codeElement === "object" &&
               codeElement !== null &&
               "props" in codeElement
-                ? String(codeElement.props.children || "")
+                ? extractText(codeElement.props.children)
                 : "";
 
             const className =
