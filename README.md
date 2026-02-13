@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tech Blog
+
+Next.js 15 기반 개인 기술 블로그입니다.
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Styling**: Tailwind CSS v4
+- **Database**: Prisma 6 + MySQL 8.0
+- **Auth**: NextAuth.js v5 (GitHub OAuth)
+- **Editor**: CodeMirror 6 (Markdown)
+- **Rendering**: react-markdown + rehype-highlight + remark-gfm
+- **Deploy**: Docker (standalone) + Nginx / Vercel
+
+## Features
+
+- Markdown 기반 블로그 글 작성/편집
+- 카테고리 및 태그 분류
+- GitHub OAuth 관리자 인증
+- 이미지 업로드 및 프록시
+- RSS Feed (`/feed.xml`)
+- 반응형 디자인 + 다크모드
+- TOC(목차) 자동 생성
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 20+
+- MySQL 8.0
+
+### Installation
+
+```bash
+npm install
+npx prisma generate
+```
+
+### Environment Variables
+
+`.env.production.example`을 참고하여 `.env` 파일을 생성합니다.
+
+```bash
+cp .env.production.example .env
+# .env 파일을 편집하여 실제 값 입력
+```
+
+### Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000)에서 확인할 수 있습니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Docker
 
-## Learn More
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Vercel
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`main` 브랜치에 push하면 자동 배포됩니다.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/
+│   ├── admin/          # 관리자 페이지 (글 작성/편집, 카테고리 관리)
+│   ├── api/            # API Routes (posts, categories, upload, auth)
+│   ├── categories/     # 카테고리별 글 목록
+│   ├── posts/          # 블로그 글 상세
+│   ├── layout.tsx      # Root layout
+│   └── page.tsx        # 메인 페이지
+├── components/         # 공통 컴포넌트
+├── lib/                # Prisma client, auth 설정
+└── types/              # TypeScript 타입 정의
+```
