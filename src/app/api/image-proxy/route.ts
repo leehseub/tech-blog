@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Only allow proxying from our VM
-  const allowedHosts = [process.env.UPLOAD_BASE_URL, "http://REDACTED_IP"].filter(Boolean);
+  const allowedHosts = [process.env.UPLOAD_BASE_URL].filter(Boolean);
   const isAllowed = allowedHosts.some((host) => url.startsWith(host!));
 
   if (!isAllowed) {
